@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Library Management System</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ LOGIN / SIGNUP ============ -->
+<div class="auth" id="auth">
+  <div class="auth-card">
+    <div class="auth-brand">📚 Library Management System</div>
+    <div class="auth-tabs">
+      <button type="button" class="tab active" data-tab="login">Login</button>
+      <button type="button" class="tab" data-tab="signup">Sign Up</button>
+    </div>
+
+    <!-- Login -->
+    <form id="loginForm" class="stack" novalidate>
+      <h2>Welcome back</h2>
+      <p class="muted">Login to manage your library.</p>
+      <div class="form-error" id="loginErr"></div>
+      <div class="form-ok" id="loginOk"></div>
+      <label>Username or Email<input id="lgUser" autocomplete="username"></label>
+      <label>Password<input type="password" id="lgPass" autocomplete="current-password"></label>
+      <label class="check"><input type="checkbox" data-toggle="lgPass"> Show password</label>
+      <button class="btn block" type="submit">Login</button>
+      <p class="switch">Not registered yet? <a href="#" data-tab="signup">Create an account</a></p>
+      <p class="hint">Demo account: <b>admin</b> / <b>admin123</b></p>
+    </form>
+
+    <!-- Signup -->
+    <form id="signupForm" class="stack" novalidate hidden>
+      <h2>Create account</h2>
+      <p class="muted">Register to start using the system.</p>
+      <div class="form-error" id="signupErr"></div>
+      <label>Full Name<input id="suName" autocomplete="name"></label>
+      <label>Username<input id="suUser" autocomplete="username" placeholder="letters, numbers, underscore"></label>
+      <label>Email<input type="email" id="suEmail" autocomplete="email"></label>
+      <label>Password<input type="password" id="suPass" autocomplete="new-password" placeholder="At least 6 characters"></label>
+      <label>Confirm Password<input type="password" id="suPass2" autocomplete="new-password"></label>
+      <label class="check"><input type="checkbox" data-toggle="suPass,suPass2"> Show passwords</label>
+      <button class="btn block" type="submit">Sign Up</button>
+      <p class="switch">Already registered? <a href="#" data-tab="login">Login here</a></p>
+    </form>
+  </div>
+</div>
+
+<!-- ============ MAIN APP ============ -->
+<div id="app">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">📚 LibraryMS</div>
+    <nav>
+      <button class="nav-btn active" data-section="dashboard">🏠 Dashboard</button>
+      <button class="nav-btn" data-section="books">📖 Books</button>
+      <button class="nav-btn" data-section="members">👥 Members</button>
+      <button class="nav-btn" data-section="issue">🔄 Issue / Return</button>
+      <button class="nav-btn" data-section="reports">📊 Reports</button>
+      <button class="nav-btn logout-side" id="logoutSide">🚪 Logout</button>
+    </nav>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <button id="menuBtn" class="icon-btn" aria-label="Menu">☰</button>
+      <h1>Library Management System</h1>
+      <div class="top-right">
+        <span id="today"></span>
+        <span id="userName" class="user-chip"></span>
+        <button id="themeBtn" class="icon-btn" aria-label="Toggle theme">🌙</button>
+        <button id="logoutBtn" class="btn btn-logout">Logout</button>
+      </div>
+    </header>
+
+    <main>
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="section active">
+        <div class="section-head"><h2>Dashboard</h2></div>
+        <div class="stats">
+          <div class="stat s1"><span>Total Books</span><h3 id="stTotal">0</h3></div>
+          <div class="stat s2"><span>Available Books</span><h3 id="stAvail">0</h3></div>
+          <div class="stat s3"><span>Issued Books</span><h3 id="stIssued">0</h3></div>
+          <div class="stat s4"><span>Total Members</span><h3 id="stMembers">0</h3></div>
+        </div>
+      </section>
+
+      <!-- BOOKS -->
+      <section id="books" class="section">
+        <div class="section-head">
+          <h2>Books</h2>
+          <button class="btn" id="addBookBtn">+ Add Book</button>
+        </div>
+        <div class="toolbar">
+          <input type="search" id="bookSearch" placeholder="Search title, author, category, ISBN...">
+          <select id="bookCat"><option value="">All Categories</option></select>
+          <select id="bookSort">
+            <option value="">Sort: Default</option>
+            <option value="title">Sort by Title</option>
+            <option value="author">Sort by Author</option>
+          </select>
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>Book ID</th><th>Title</th><th>Author</th><th>Category</th><th>ISBN</th><th>Quantity</th><th>Available</th><th>Actions</th></tr></thead>
+            <tbody id="booksBody"></tbody>
+          </table>
+          <div class="empty" id="booksEmpty">No books found.</div>
+        </div>
+      </section>
+
+      <!-- MEMBERS -->
+      <section id="members" class="section">
+        <div class="section-head">
+          <h2>Members</h2>
+          <button class="btn" id="addMemberBtn">+ Add Member</button>
+        </div>
+        <div class="toolbar">
+          <input type="search" id="memberSearch" placeholder="Search by ID, name, email, phone, department...">
+        </div>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>Member ID</th><th>Name</th><th>Email</th><th>Phone</th><th>Department</th><th>Actions</th></tr></thead>
+            <tbody id="membersBody"></tbody>
+          </table>
+          <div class="empty" id="membersEmpty">No members found.</div>
+        </div>
+      </section>
+
+      <!-- ISSUE / RETURN -->
+      <section id="issue" class="section">
+        <div class="section-head"><h2>Issue / Return Books</h2></div>
+        <form id="issueForm" class="card" novalidate>
+          <h3>Issue a Book</h3>
+          <div class="form-grid">
+            <label>Member<select id="issMember"></select></label>
+            <label>Book<select id="issBook"></select></label>
+            <label>Issue Date<input type="date" id="issDate"></label>
+            <label>Due Date<input type="date" id="dueDate"></label>
+          </div>
+          <div class="form-error" id="issueErr"></div>
+          <button class="btn" type="submit">Issue Book</button>
+        </form>
+        <h3 class="sub">Currently Issued Books <small>(fine: ₹5 per overdue day)</small></h3>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>Txn ID</th><th>Member</th><th>Book</th><th>Issue Date</th><th>Due Date</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody id="issuedBody"></tbody>
+          </table>
+          <div class="empty" id="issuedEmpty">No books are currently issued.</div>
+        </div>
+      </section>
+
+      <!-- REPORTS -->
+      <section id="reports" class="section">
+        <div class="section-head">
+          <h2>Reports</h2>
+          <button class="btn no-print" id="printBtn">🖨 Print Report</button>
+        </div>
+        <div class="stats">
+          <div class="stat s1"><span>Total Books</span><h3 id="rpBooks">0</h3></div>
+          <div class="stat s4"><span>Total Members</span><h3 id="rpMembers">0</h3></div>
+          <div class="stat s3"><span>Currently Issued</span><h3 id="rpIssued">0</h3></div>
+          <div class="stat s2"><span>Returned Books</span><h3 id="rpReturned">0</h3></div>
+          <div class="stat s5"><span>Overdue Books</span><h3 id="rpOverdue">0</h3></div>
+          <div class="stat s6"><span>Total Fine Collected</span><h3 id="rpFine">₹0</h3></div>
+        </div>
+        <h3 class="sub">Transaction History</h3>
+        <div class="card table-wrap">
+          <table>
+            <thead><tr><th>Txn ID</th><th>Member</th><th>Book</th><th>Issued</th><th>Due</th><th>Returned</th><th>Overdue Days</th><th>Fine</th><th>Status</th></tr></thead>
+            <tbody id="historyBody"></tbody>
+          </table>
+          <div class="empty" id="historyEmpty">No transactions yet.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- BOOK MODAL -->
+<div class="modal-overlay" id="bookModal">
+  <form class="modal" id="bookForm" novalidate>
+    <h3 id="bookModalTitle">Add Book</h3>
+    <div class="form-grid">
+      <label>Book ID<input id="bId" placeholder="e.g. B007"></label>
+      <label>Book Title<input id="bTitle"></label>
+      <label>Author<input id="bAuthor"></label>
+      <label>Category<input id="bCategory" list="catList"><datalist id="catList"></datalist></label>
+      <label>ISBN<input id="bIsbn" placeholder="10 or 13 digits"></label>
+      <label>Quantity<input type="number" id="bQty" min="1"></label>
+    </div>
+    <div class="form-error" id="bookErr"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close="bookModal">Cancel</button>
+      <button type="submit" class="btn">Save Book</button>
+    </div>
+  </form>
+</div>
+
+<!-- MEMBER MODAL -->
+<div class="modal-overlay" id="memberModal">
+  <form class="modal" id="memberForm" novalidate>
+    <h3 id="memberModalTitle">Add Member</h3>
+    <div class="form-grid">
+      <label>Member ID<input id="mId" placeholder="e.g. M004"></label>
+      <label>Member Name<input id="mName"></label>
+      <label>Email<input type="email" id="mEmail"></label>
+      <label>Phone<input id="mPhone" placeholder="10-digit number"></label>
+      <label>Department<input id="mDept"></label>
+    </div>
+    <div class="form-error" id="memberErr"></div>
+    <div class="modal-actions">
+      <button type="button" class="btn ghost" data-close="memberModal">Cancel</button>
+      <button type="submit" class="btn">Save Member</button>
+    </div>
+  </form>
+</div>
+
+<div class="toasts" id="toasts"></div>
+<script src="script.js"></script>
+</body>
+</html>
